@@ -16,20 +16,23 @@ class FirebaseUploader {
 
     private lateinit var uploadTask: UploadTask
 
+    private var downloadUri: Uri? = null
+
     fun uploadAudioFiles(
         fileName: String,
         uploader: String,
         onUploadSuccess: (mediaUrl: String) -> Unit,
         onUploadFailure: (message: String) -> Unit,
-        uploadProgress: (progress: String) -> Unit
+        uploadProgress: (progress: String) -> Unit,
+        getDownloadUrl: (uri: String) -> Unit
     ) {
 
         val file = Uri.fromFile(File(fileName))
-        val riversRef = storageRef
+        val ref = storageRef
             .child("audio")
             .child(uploader + "/${file.lastPathSegment}")
 
-        uploadTask = riversRef.putFile(file)
+        uploadTask = ref.putFile(file)
 
         // Register observers to listen for when the download is done or if it fails
         uploadTask.addOnFailureListener {
@@ -37,7 +40,6 @@ class FirebaseUploader {
             onUploadFailure(it.message!!)
         }
             .addOnSuccessListener { taskSnapshot ->
-                Log.i(LOG_RECORD_AUDIO, "Upload succeeded ")
                 if (taskSnapshot.task.isSuccessful) {
                     val downloadUri =
                         taskSnapshot.metadata?.bucket + "/" + taskSnapshot.metadata?.path
@@ -46,10 +48,21 @@ class FirebaseUploader {
                     println("Task failed  ${taskSnapshot.task.exception.toString()}")
                 }
             }
+
             .addOnProgressListener {
                 Log.i(LOG_RECORD_AUDIO, "upload commenced")
                 uploadProgress("${(it.bytesTransferred / it.totalByteCount) * 100}%")
+                if (it.bytesTransferred == it.totalByteCount) {
+
+                    ref.downloadUrl.addOnSuccessListener { uri ->
+                        getDownloadUrl(uri.toString())
+                    }.addOnFailureListener {
+                        Log.i(LOG_RECORD_AUDIO, "Could not get download Uri")
+                    }
+
+                }
             }
+
             .addOnPausedListener {
                 Log.i(LOG_RECORD_AUDIO, "Upload is paused")
                 uploadProgress("Upload is paused")

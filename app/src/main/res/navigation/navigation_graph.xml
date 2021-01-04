@@ -15,13 +15,22 @@
             app:destination="@id/leiRecords" />
         <action
             android:id="@+id/action_recordAudio_to_davidRecords"
-            app:destination="@id/davidRecords" />
+            app:destination="@id/davidRecords">
+            <argument
+                android:name="downloadUri"
+                android:defaultValue=""
+                app:argType="string" />
+        </action>
     </fragment>
     <fragment
         android:id="@+id/davidRecords"
         android:name="com.kuforiji.lei.ui.DavidRecords"
         android:label="fragment_david_records"
         tools:layout="@layout/fragment_david_records">
+        <argument
+            android:name="downloadUri"
+            android:defaultValue=""
+            app:argType="string" />
         <action
             android:id="@+id/action_davidRecords_to_leiRecords"
             app:destination="@id/leiRecords" />

@@ -28,6 +28,7 @@ private const val LOG_RECORD_AUDIO = "AudioRecordLog"
 
 class RecordAudio : Fragment() {
 
+    private var downloadUri: String? = null
     private var mStartRecording = true
     private var mStartPlayblack = true
 
@@ -77,9 +78,15 @@ class RecordAudio : Fragment() {
             )
         }
         davidRecords.setOnClickListener {
-            view.findNavController().navigate(
-                R.id.action_recordAudio_to_davidRecords
-            )
+            if (downloadUri.isNullOrEmpty()) {
+                context.let {
+                    Toast.makeText(it, "Upload to proceed", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
+            }
+            Log.i(LOG_RECORD_AUDIO, "uri passed to nav is $downloadUri")
+            val action = RecordAudioDirections.actionRecordAudioToDavidRecords(downloadUri!!)
+            view.findNavController().navigate(action)
         }
         recordAudio.setOnClickListener {
             onRecord(mStartRecording)
@@ -197,13 +204,18 @@ class RecordAudio : Fragment() {
             "david",
             ::onUploadSuccess,
             ::onUploadFailure,
-            ::uploadProgress
+            ::uploadProgress,
+            ::getDownloadUrl
         )
     }
 
+    private fun getDownloadUrl(stringValueOfUri: String) {
+        Log.i("AudioRecordLog", "downloadUri is $stringValueOfUri")
+        downloadUri = stringValueOfUri
+    }
+
     private fun onUploadSuccess(string: String) {
-        Log.i(LOG_RECORD_AUDIO, "download uri is $string")
-        // TODO append to a list saved on device
+        Log.i(LOG_RECORD_AUDIO, "upload succeeded")
     }
 
     private fun onUploadFailure(string: String) {
