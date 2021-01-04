@@ -10,15 +10,16 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import com.kuforiji.lei.R
 import com.kuforiji.lei.mymediaplayer.MyMediaPlayerImpl
 import com.kuforiji.lei.mymediarecorder.MyMediaRecorderImpl
+import com.kuforiji.lei.utils.FirebaseUploader
 import com.kuforiji.lei.utils.hide
 import com.kuforiji.lei.utils.show
-import java.text.SimpleDateFormat
 import java.util.*
 
 private const val REQUEST_RECORD_AUDIO_PERMISSION = 200
@@ -29,21 +30,17 @@ class RecordAudio : Fragment() {
 
     private var mStartRecording = true
     private var mStartPlayblack = true
+
     private var mediaRecorder: MyMediaRecorderImpl? = null
+    private var mediaPlayer: MyMediaPlayerImpl? = null
+
     private lateinit var recordText: TextView
     private lateinit var playText: TextView
-    private var fileName: String? = null
-    private var mediaPlayer: MyMediaPlayerImpl? = null
     private lateinit var playAudioButton: ImageView
+    private lateinit var uploadAudioButton: Button
 
-//    private lateinit var exoPlayerView: PlayerView
-//    private var exoPlayer: SimpleExoPlayer? = null
-//
-//    private var playWhenReady = true
-//    private var currentWindow = 0
-//    private var playbackPosition: Long = 0;
+    private var fileName: String? = null
 
-    // Requesting permission to RECORD_AUDIO
     private var permissionToRecordAccepted = false
     private var permissions: Array<String> = arrayOf(Manifest.permission.RECORD_AUDIO)
 
@@ -90,6 +87,10 @@ class RecordAudio : Fragment() {
         playAudioButton.setOnClickListener {
             onPlay(mStartPlayblack)
         }
+        uploadAudioButton.setOnClickListener {
+            uploadAudio()
+        }
+
     }
 
     private fun startAudioRecording() {
@@ -167,16 +168,6 @@ class RecordAudio : Fragment() {
         if (!permissionToRecordAccepted) activity?.finish()
     }
 
-    private fun generateFileName(): String {
-        val date = Calendar.getInstance().time
-        return "Recorded on " + date.toString("yyyy/MM/dd HH:mm:ss")
-    }
-
-    private fun Date.toString(format: String, locale: Locale = Locale.getDefault()): String {
-        val formatter = SimpleDateFormat(format, locale)
-        return formatter.format(this)
-    }
-
     override fun onStop() {
         super.onStop()
         mediaRecorder?.stopRecording()
@@ -186,16 +177,45 @@ class RecordAudio : Fragment() {
     private fun init(view: View) {
         recordText = view.findViewById(R.id.record_audio_text)
         recordText.text = getString(R.string.start_recording)
+
         playText = view.findViewById(R.id.playback_audio_text)
         playText.text = getString(R.string.play_audio_recording)
-        playAudioButton = view.findViewById(R.id.playback_audio)
-
-        playAudioButton.hide()
         playText.hide()
+
+        playAudioButton = view.findViewById(R.id.playback_audio)
+        playAudioButton.hide()
+
+        uploadAudioButton = view.findViewById(R.id.upload_audio)
 
         mediaPlayer = MyMediaPlayerImpl()
         mediaRecorder = MyMediaRecorderImpl()
     }
-}
 
+    private fun uploadAudio() {
+        FirebaseUploader().uploadAudioFiles(
+            fileName!!,
+            "david",
+            ::onUploadSuccess,
+            ::onUploadFailure,
+            ::uploadProgress
+        )
+    }
+
+    private fun onUploadSuccess(string: String) {
+        Log.i(LOG_RECORD_AUDIO, "download uri is $string")
+        // TODO append to a list saved on device
+    }
+
+    private fun onUploadFailure(string: String) {
+        context.let {
+            Toast.makeText(it, "upload failed!", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun uploadProgress(string: String) {
+        context.let {
+            Toast.makeText(it, "uploading- $string", Toast.LENGTH_SHORT).show()
+        }
+    }
+}
 
