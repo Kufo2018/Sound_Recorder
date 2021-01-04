@@ -2,13 +2,12 @@ package com.kuforiji.lei.mymediarecorder
 
 import android.media.MediaRecorder
 import android.util.Log
-import java.io.IOException
 
-private const val LOG_TAG = "AudioRecordTest"
+private const val LOG_TAG = "AudioRecordLog"
 
 class MyMediaRecorderImpl : MyMediaRecorderInterface {
 
-    private lateinit var mediaRecorder: MediaRecorder
+    private var mediaRecorder: MediaRecorder? = null
 
     override fun startRecording(fileName: String) {
         mediaRecorder = MediaRecorder().apply {
@@ -19,7 +18,7 @@ class MyMediaRecorderImpl : MyMediaRecorderInterface {
 
             try {
                 prepare()
-            } catch (e: IOException) {
+            } catch (e: Exception) {
                 Log.i(LOG_TAG, "prepare() failed")
             }
 
@@ -28,11 +27,8 @@ class MyMediaRecorderImpl : MyMediaRecorderInterface {
     }
 
     override fun stopRecording() {
-        mediaRecorder.stop()
+        mediaRecorder?.stop()
+        mediaRecorder?.release()
+        mediaRecorder = null
     }
-
-    override fun releaseRecorder() {
-        mediaRecorder.release()
-    }
-
 }

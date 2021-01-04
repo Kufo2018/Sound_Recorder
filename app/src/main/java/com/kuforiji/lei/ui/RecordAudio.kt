@@ -3,7 +3,6 @@ package com.kuforiji.lei.ui
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.os.Environment
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -17,7 +16,8 @@ import androidx.navigation.findNavController
 import com.kuforiji.lei.R
 import com.kuforiji.lei.mymediaplayer.MyMediaPlayerImpl
 import com.kuforiji.lei.mymediarecorder.MyMediaRecorderImpl
-import java.io.File
+import com.kuforiji.lei.utils.hide
+import com.kuforiji.lei.utils.show
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -34,7 +34,7 @@ class RecordAudio : Fragment() {
     private lateinit var playText: TextView
     private var fileName: String? = null
     private var mediaPlayer: MyMediaPlayerImpl? = null
-    private lateinit var playAudio: ImageView
+    private lateinit var playAudioButton: ImageView
 
 //    private lateinit var exoPlayerView: PlayerView
 //    private var exoPlayer: SimpleExoPlayer? = null
@@ -87,28 +87,24 @@ class RecordAudio : Fragment() {
         recordAudio.setOnClickListener {
             onRecord(mStartRecording)
         }
-        playAudio.setOnClickListener {
+        playAudioButton.setOnClickListener {
             onPlay(mStartPlayblack)
         }
-//        exoPlayerView.setOnClickListener {
-//            initializePlayer()
-//        }
     }
 
-    private fun startAudioRecordingAndUpdateUI() {
+    private fun startAudioRecording() {
         context.let {
-            val name = UUID.randomUUID().toString() + ".3gp"
-            val file =
-                File(it?.getExternalFilesDir(Environment.DIRECTORY_PODCASTS), name)
-            fileName = file.absolutePath
-            mediaRecorder?.startRecording(file.absolutePath)
+            val uuid = UUID.randomUUID().toString()
+            fileName = it?.filesDir?.path + "/" + uuid + ".3gp"
+            mediaRecorder?.startRecording(fileName!!)
             recordText.text = getString(R.string.stop_recording)
 
-            //playAudio.visibility = View.INVISIBLE
-            playText.visibility = View.INVISIBLE
-            mStartRecording = !mStartRecording
-            Log.i(LOG_RECORD_AUDIO, "Audio recording started ${file.absolutePath}")
+            playAudioButton.hide()
+            playText.hide()
 
+            mStartRecording = !mStartRecording
+
+            Log.i(LOG_RECORD_AUDIO, "Audio recording started $fileName")
         }
     }
 
@@ -116,27 +112,30 @@ class RecordAudio : Fragment() {
         mediaRecorder?.stopRecording()
 
         recordText.text = getString(R.string.start_recording)
-        playAudio.visibility = View.VISIBLE
-        playText.visibility = View.VISIBLE
+
+        playAudioButton.show()
+        playText.show()
+
         mStartRecording = true
+
         Log.i(LOG_RECORD_AUDIO, "Audio recording stopped")
     }
 
     private fun onRecord(start: Boolean) = if (start) {
-        startAudioRecordingAndUpdateUI()
+        startAudioRecording()
     } else {
         stopAudioRecording()
     }
 
     private fun startAudioPlayback() {
         context.let {
-            val file =
-                File(it?.getExternalFilesDir(Environment.DIRECTORY_PODCASTS), fileName!!)
-            mediaPlayer?.playAudio(file.absolutePath)
+            mediaPlayer?.playAudio(fileName!!)
             playText.text = getString(R.string.media_is_playing)
 
             mStartPlayblack = !mStartPlayblack
-            Log.i(LOG_RECORD_AUDIO, "file to be played is ${file.absolutePath}")
+
+            playAudioButton.setImageResource(R.drawable.stop_recording_image)
+            Log.i(LOG_RECORD_AUDIO, "audio playback stopped")
         }
     }
 
@@ -144,6 +143,7 @@ class RecordAudio : Fragment() {
         mediaPlayer?.stopPlayingAudio()
         mStartPlayblack = true
         playText.text = getString(R.string.play_audio_recording)
+        playAudioButton.setImageResource(R.drawable.playback_icon)
         Log.i(LOG_RECORD_AUDIO, "Audio playback stopped")
     }
 
@@ -164,7 +164,7 @@ class RecordAudio : Fragment() {
         } else {
             false
         }
-        if (!permissionToRecordAccepted) return
+        if (!permissionToRecordAccepted) activity?.finish()
     }
 
     private fun generateFileName(): String {
@@ -179,12 +179,8 @@ class RecordAudio : Fragment() {
 
     override fun onStop() {
         super.onStop()
-        mediaRecorder?.releaseRecorder()
-        mediaRecorder = null
-        mediaPlayer?.releasePlayer()
-        mediaPlayer = null
-
-//        if (Util.SDK_INT >= 24) releasePlayer()
+        mediaRecorder?.stopRecording()
+        mediaPlayer?.stopPlayingAudio()
     }
 
     private fun init(view: View) {
@@ -192,39 +188,14 @@ class RecordAudio : Fragment() {
         recordText.text = getString(R.string.start_recording)
         playText = view.findViewById(R.id.playback_audio_text)
         playText.text = getString(R.string.play_audio_recording)
+        playAudioButton = view.findViewById(R.id.playback_audio)
 
-        playAudio = view.findViewById<ImageView>(R.id.playback_audio)
-        playAudio.visibility = View.INVISIBLE
+        playAudioButton.hide()
+        playText.hide()
 
-        playText.visibility = View.INVISIBLE
-
-//        exoPlayer = SimpleExoPlayer.Builder(requireContext()).build()
-//        exoPlayerView = view.findViewById(R.id.playback_audio)
-//        exoPlayerView.player = exoPlayer
-
+        mediaPlayer = MyMediaPlayerImpl()
+        mediaRecorder = MyMediaRecorderImpl()
     }
-
-//    private fun initializePlayer() {
-//        val mediaItem = MediaItem.fromUri(fileName!!)
-//        Log.i("AudioRecordLog", "media Uri is $fileName")
-//        exoPlayer?.setMediaItem(mediaItem)
-//        exoPlayer?.playWhenReady = playWhenReady
-//        exoPlayer?.seekTo(currentWindow, playbackPosition)
-//        exoPlayer?.prepare()
-//    }
-
-//    override fun onPause() {
-//        super.onPause()
-//        if (Util.SDK_INT < 24) releasePlayer()
-//    }
-
-//    private fun releasePlayer() {
-//        if (exoPlayer != null) {
-//            playWhenReady = exoPlayer!!.playWhenReady
-//            playbackPosition = exoPlayer!!.currentPosition
-//            currentWindow = exoPlayer!!.currentWindowIndex
-//            exoPlayer!!.release()
-//            exoPlayer = null
-//        }
-//    }
 }
+
+

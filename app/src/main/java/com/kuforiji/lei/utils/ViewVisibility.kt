@@ -2,8 +2,12 @@ package com.kuforiji.lei.utils
 
 import android.view.View
 
-fun View.IsVisible(boolean: Boolean) = if (boolean) {
-    View.VISIBLE
-} else {
-    View.INVISIBLE
+fun View.show() {
+    this.visibility = View.VISIBLE
 }
+
+fun View.hide() {
+    this.visibility = View.INVISIBLE
+}
+
+

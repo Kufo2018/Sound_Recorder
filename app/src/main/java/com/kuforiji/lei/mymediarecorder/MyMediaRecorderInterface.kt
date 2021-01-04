@@ -4,5 +4,4 @@ interface MyMediaRecorderInterface {
 
     fun stopRecording() {}
     fun startRecording(fileName: String) {}
-    fun releaseRecorder() {}
 }

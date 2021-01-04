@@ -2,11 +2,10 @@ package com.kuforiji.lei.mymediaplayer
 
 import android.media.MediaPlayer
 import android.util.Log
-import java.io.IOException
 
 class MyMediaPlayerImpl : MyMediaPlayerInterface {
 
-    private lateinit var mediaPlayer: MediaPlayer
+    private var mediaPlayer: MediaPlayer? = null
 
     override fun playAudio(fileName: String) {
         mediaPlayer = MediaPlayer().apply {
@@ -14,17 +13,19 @@ class MyMediaPlayerImpl : MyMediaPlayerInterface {
                 setDataSource(fileName)
                 prepare()
                 start()
-            } catch (e: IOException) {
+            } catch (e: Exception) {
                 Log.i("AudioRecordLog", "playback prepare() failed")
             }
         }
     }
 
     override fun stopPlayingAudio() {
-        mediaPlayer.stop()
+        mediaPlayer?.stop()
+        mediaPlayer?.release()
+        mediaPlayer = null
     }
 
-    override fun releasePlayer() {
-        mediaPlayer.release()
+    fun MyMediaPlayerImpl.stopPlayBackWhenComplete() {
+        mediaPlayer?.setOnCompletionListener { stopPlayingAudio() }
     }
 }
