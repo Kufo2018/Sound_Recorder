@@ -6,87 +6,90 @@
     android:layout_height="match_parent"
     tools:context=".ui.RecordAudio">
 
+    <EditText
+        android:id="@+id/editText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="@string/add_name_for_recording"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/guideline3" />
+
     <ImageView
         android:id="@+id/record_audio_image"
-        android:layout_width="0dp"
+        android:layout_width="48dp"
         android:layout_height="48dp"
-        android:layout_marginBottom="8dp"
         android:src="@drawable/record_audio_image"
-        app:layout_constraintBottom_toTopOf="@id/record_audio_text"
+        app:layout_constraintBottom_toTopOf="@id/guideline3"
         app:layout_constraintEnd_toStartOf="@+id/guideline"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.3" />
 
     <ImageView
         android:id="@+id/playback_audio"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:src="@drawable/playback_icon"
-        app:layout_constraintBottom_toTopOf="@+id/record_audio_text"
-        app:layout_constraintEnd_toEndOf="@id/guideline2"
-        app:layout_constraintStart_toStartOf="@+id/guideline"
-        app:layout_constraintTop_toTopOf="@+id/record_audio_image" />
 
-    <!--    <com.google.android.exoplayer2.ui.PlayerView-->
-    <!--        android:background="@drawable/playback_icon"-->
-    <!--        android:id="@+id/playback_audio"-->
-    <!--        android:layout_width="48dp"-->
-    <!--        android:layout_height="0dp"-->
-    <!--        app:layout_constraintBottom_toTopOf="@+id/record_audio_text"-->
-    <!--        app:layout_constraintEnd_toEndOf="parent"-->
-    <!--        app:layout_constraintStart_toStartOf="@+id/guideline"-->
-    <!--        app:layout_constraintTop_toTopOf="@+id/record_audio_image"-->
-    <!--        />-->
+        app:layout_constraintBottom_toTopOf="@+id/guideline3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/guideline"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/playback_audio_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
         android:text="@string/playback_audio"
         android:textSize="16sp"
-        app:layout_constraintBottom_toTopOf="@id/guide_constraint"
-        app:layout_constraintEnd_toEndOf="@id/playback_audio"
-        app:layout_constraintStart_toStartOf="@id/playback_audio" />
+        app:layout_constraintEnd_toEndOf="@+id/playback_audio"
+        app:layout_constraintStart_toStartOf="@+id/playback_audio"
+        app:layout_constraintTop_toBottomOf="@+id/playback_audio" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.33" />
+        app:layout_constraintGuide_percent="0.5" />
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.66" />
 
     <Button
         android:id="@+id/upload_audio"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
+        android:layout_marginTop="8dp"
         android:text="@string/upload"
-        app:layout_constraintBottom_toBottomOf="@+id/playback_audio_text"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/guideline2"
-        app:layout_constraintTop_toTopOf="@+id/playback_audio" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editText" />
 
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@+id/upload_audio"
+        app:layout_constraintStart_toEndOf="@id/upload_audio"
+        app:layout_constraintTop_toTopOf="@id/upload_audio" />
 
     <TextView
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
         android:id="@+id/record_audio_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
         android:textSize="16sp"
-        app:layout_constraintBottom_toTopOf="@id/guide_constraint"
         app:layout_constraintEnd_toEndOf="@+id/record_audio_image"
-        app:layout_constraintStart_toStartOf="@+id/record_audio_image" />
+        app:layout_constraintStart_toStartOf="@+id/record_audio_image"
+        app:layout_constraintTop_toBottomOf="@+id/record_audio_image" />
 
     <!--    android:text="@string/record_audio"-->
 

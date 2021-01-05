@@ -24,6 +24,7 @@ class DavidRecords : Fragment() {
 
     private val args: DavidRecordsArgs by navArgs()
 
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -37,8 +38,7 @@ class DavidRecords : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         playerView = layout.findViewById(R.id.video_view)
         uri = args.downloadUri
-        Log.i("AudioRecordLog", "uri received is $uri")
-        initializePlayer()
+        Log.i("AudioRecordLog", "uri received is $uri") // TODO no need for arguments
     }
 
     private fun initializePlayer() {

@@ -3,30 +3,35 @@ package com.kuforiji.lei.ui
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
 import com.kuforiji.lei.R
 import com.kuforiji.lei.mymediaplayer.MyMediaPlayerImpl
 import com.kuforiji.lei.mymediarecorder.MyMediaRecorderImpl
-import com.kuforiji.lei.utils.FirebaseUploader
+import com.kuforiji.lei.presentation.DavidRecordsViewModel
+import com.kuforiji.lei.utils.MyFirebaseService
 import com.kuforiji.lei.utils.hide
 import com.kuforiji.lei.utils.show
+import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
 
 private const val REQUEST_RECORD_AUDIO_PERMISSION = 200
 private const val LOG_RECORD_AUDIO = "AudioRecordLog"
 
-
+@AndroidEntryPoint
 class RecordAudio : Fragment() {
+
+    private var fileName: String? = null
+    private lateinit var editText: EditText
 
     private var downloadUri: String? = null
     private var mStartRecording = true
@@ -40,10 +45,14 @@ class RecordAudio : Fragment() {
     private lateinit var playAudioButton: ImageView
     private lateinit var uploadAudioButton: Button
 
-    private var fileName: String? = null
+    private var filePath: String? = null
 
     private var permissionToRecordAccepted = false
     private var permissions: Array<String> = arrayOf(Manifest.permission.RECORD_AUDIO)
+
+    private val davidRecordsViewModel: DavidRecordsViewModel by viewModels()
+
+    private lateinit var progressBar: ProgressBar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,6 +75,7 @@ class RecordAudio : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         init(view)
         clickListeners(view)
+        observers()
     }
 
     private fun clickListeners(view: View) {
@@ -78,12 +88,13 @@ class RecordAudio : Fragment() {
             )
         }
         davidRecords.setOnClickListener {
-            if (downloadUri.isNullOrEmpty()) {
-                context.let {
-                    Toast.makeText(it, "Upload to proceed", Toast.LENGTH_SHORT).show()
-                    return@setOnClickListener
-                }
-            }
+//            if (downloadUri.isNullOrEmpty()) {
+//                context.let {
+//                    Toast.makeText(it, "Upload to proceed", Toast.LENGTH_SHORT).show()
+//                    return@setOnClickListener
+//                }
+//            }
+            downloadUri = "null" //TODO remove
             Log.i(LOG_RECORD_AUDIO, "uri passed to nav is $downloadUri")
             val action = RecordAudioDirections.actionRecordAudioToDavidRecords(downloadUri!!)
             view.findNavController().navigate(action)
@@ -95,16 +106,29 @@ class RecordAudio : Fragment() {
             onPlay(mStartPlayblack)
         }
         uploadAudioButton.setOnClickListener {
+            context.let {
+                if (fileName.isNullOrEmpty() || filePath.isNullOrEmpty()) {
+                    Toast.makeText(
+                        it,
+                        "Add a file name before uploading",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    return@setOnClickListener
+                }
+            }
             uploadAudio()
         }
-
+        editText.afterTextChanged {
+            fileName = it
+            Log.i(LOG_RECORD_AUDIO, "text is $it")
+        }
     }
 
     private fun startAudioRecording() {
         context.let {
             val uuid = UUID.randomUUID().toString()
-            fileName = it?.filesDir?.path + "/" + uuid + ".3gp"
-            mediaRecorder?.startRecording(fileName!!)
+            filePath = it?.filesDir?.path + "/" + uuid + ".3gp"
+            mediaRecorder?.startRecording(filePath!!)
             recordText.text = getString(R.string.stop_recording)
 
             playAudioButton.hide()
@@ -112,7 +136,7 @@ class RecordAudio : Fragment() {
 
             mStartRecording = !mStartRecording
 
-            Log.i(LOG_RECORD_AUDIO, "Audio recording started $fileName")
+            Log.i(LOG_RECORD_AUDIO, "Audio recording started $filePath")
         }
     }
 
@@ -137,7 +161,7 @@ class RecordAudio : Fragment() {
 
     private fun startAudioPlayback() {
         context.let {
-            mediaPlayer?.playAudio(fileName!!)
+            mediaPlayer?.playAudio(filePath!!)
             playText.text = getString(R.string.media_is_playing)
 
             mStartPlayblack = !mStartPlayblack
@@ -194,13 +218,18 @@ class RecordAudio : Fragment() {
 
         uploadAudioButton = view.findViewById(R.id.upload_audio)
 
+        editText = view.findViewById(R.id.editText)
+
+        progressBar = view.findViewById(R.id.progress_bar)
+
         mediaPlayer = MyMediaPlayerImpl()
         mediaRecorder = MyMediaRecorderImpl()
     }
 
     private fun uploadAudio() {
-        FirebaseUploader().uploadAudioFiles(
+        MyFirebaseService().uploadAudioFiles(
             fileName!!,
+            filePath!!,
             "david",
             ::onUploadSuccess,
             ::onUploadFailure,
@@ -212,6 +241,16 @@ class RecordAudio : Fragment() {
     private fun getDownloadUrl(stringValueOfUri: String) {
         Log.i("AudioRecordLog", "downloadUri is $stringValueOfUri")
         downloadUri = stringValueOfUri
+
+        if (!downloadUri.isNullOrEmpty() && !fileName.isNullOrEmpty()) {
+            davidRecordsViewModel.uploadUrl(fileName!!, downloadUri!!)
+            progressBar.show()
+        } else {
+            Log.i(
+                LOG_RECORD_AUDIO,
+                "one or more files is empty, filename- $fileName uri- $downloadUri"
+            )
+        }
     }
 
     private fun onUploadSuccess(string: String) {
@@ -228,6 +267,30 @@ class RecordAudio : Fragment() {
         context.let {
             Toast.makeText(it, "uploading- $string", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    private fun EditText.afterTextChanged(afterTextChanged: (String) -> Unit) {
+        this.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            }
+
+            override fun afterTextChanged(editable: Editable?) {
+                afterTextChanged.invoke(editable.toString())
+            }
+        })
+    }
+
+    private fun observers() {
+        davidRecordsViewModel.uploadAudioLiveData.observe(viewLifecycleOwner, {
+            context.let {
+                Toast.makeText(it, "Upload successful", Toast.LENGTH_SHORT).show()
+            }
+            progressBar.hide()
+            editText.text.clear()
+        })
     }
 }
 

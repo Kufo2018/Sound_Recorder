@@ -5,11 +5,12 @@ import android.util.Log
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.UploadTask
 import com.google.firebase.storage.ktx.storage
+import com.google.firebase.storage.ktx.storageMetadata
 import java.io.File
 
 private const val LOG_RECORD_AUDIO = "AudioRecordLog"
 
-class FirebaseUploader {
+class MyFirebaseService {
 
     private val storage = Firebase.storage
     private var storageRef = storage.reference
@@ -20,6 +21,7 @@ class FirebaseUploader {
 
     fun uploadAudioFiles(
         fileName: String,
+        filePath: String,
         uploader: String,
         onUploadSuccess: (mediaUrl: String) -> Unit,
         onUploadFailure: (message: String) -> Unit,
@@ -27,12 +29,16 @@ class FirebaseUploader {
         getDownloadUrl: (uri: String) -> Unit
     ) {
 
-        val file = Uri.fromFile(File(fileName))
+        val file = Uri.fromFile(File(filePath))
         val ref = storageRef
             .child("audio")
             .child(uploader + "/${file.lastPathSegment}")
 
-        uploadTask = ref.putFile(file)
+        val metadata = storageMetadata {
+            setCustomMetadata(FIREBASE_METADATA_KEY, fileName)
+        }
+
+        uploadTask = ref.putFile(file, metadata)
 
         // Register observers to listen for when the download is done or if it fails
         uploadTask.addOnFailureListener {
@@ -66,6 +72,42 @@ class FirebaseUploader {
             .addOnPausedListener {
                 Log.i(LOG_RECORD_AUDIO, "Upload is paused")
                 uploadProgress("Upload is paused")
+            }
+    }
+
+    fun getAudioLinksAndMetaData() {
+        val listOfUrls = arrayListOf<String>()
+        val listOfMetaData = arrayListOf<String>()
+        val ref = storageRef
+            .child("audio/david")
+
+        ref.listAll()
+            .addOnSuccessListener {
+                it.items.forEach { item ->
+                    item.downloadUrl
+                        .addOnSuccessListener { uri ->
+                            listOfUrls.add(uri.toString())
+                            Log.i(LOG_RECORD_AUDIO, "working")
+                        }
+                        .addOnFailureListener {
+                            Log.i(LOG_RECORD_AUDIO, "could not each item's urls")
+                        }
+
+                    item.metadata.addOnSuccessListener { metadata ->
+                        listOfMetaData.add(
+                            metadata.getCustomMetadata(FIREBASE_METADATA_KEY).toString()
+                        )
+                        Log.i(LOG_RECORD_AUDIO, "working")
+                    }.addOnFailureListener { exception ->
+                        Log.i(
+                            LOG_RECORD_AUDIO,
+                            "could not fetch meta data ${exception.message}"
+                        )
+                    }
+                }
+            }.addOnFailureListener {
+                Log.i(LOG_RECORD_AUDIO, "could not fetch audio files")
+                // Uh-oh, an error occurred.
             }
     }
 }
