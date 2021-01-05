@@ -88,15 +88,7 @@ class RecordAudio : Fragment() {
             )
         }
         davidRecords.setOnClickListener {
-//            if (downloadUri.isNullOrEmpty()) {
-//                context.let {
-//                    Toast.makeText(it, "Upload to proceed", Toast.LENGTH_SHORT).show()
-//                    return@setOnClickListener
-//                }
-//            }
-            downloadUri = "null" //TODO remove
-            Log.i(LOG_RECORD_AUDIO, "uri passed to nav is $downloadUri")
-            val action = RecordAudioDirections.actionRecordAudioToDavidRecords(downloadUri!!)
+            val action = RecordAudioDirections.actionRecordAudioToDavidRecords()
             view.findNavController().navigate(action)
         }
         recordAudio.setOnClickListener {
@@ -253,11 +245,11 @@ class RecordAudio : Fragment() {
         }
     }
 
-    private fun onUploadSuccess(string: String) {
+    private fun onUploadSuccess() {
         Log.i(LOG_RECORD_AUDIO, "upload succeeded")
     }
 
-    private fun onUploadFailure(string: String) {
+    private fun onUploadFailure() {
         context.let {
             Toast.makeText(it, "upload failed!", Toast.LENGTH_SHORT).show()
         }

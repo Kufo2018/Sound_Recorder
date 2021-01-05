@@ -1,12 +1,10 @@
 package com.kuforiji.lei.ui
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.navArgs
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.ui.PlayerView
@@ -22,8 +20,7 @@ class DavidRecords : Fragment() {
 
     private lateinit var player: SimpleExoPlayer
 
-    private val args: DavidRecordsArgs by navArgs()
-
+    // private val args: DavidRecordsArgs by navArgs()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -37,8 +34,6 @@ class DavidRecords : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         playerView = layout.findViewById(R.id.video_view)
-        uri = args.downloadUri
-        Log.i("AudioRecordLog", "uri received is $uri") // TODO no need for arguments
     }
 
     private fun initializePlayer() {

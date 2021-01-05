@@ -23,8 +23,8 @@ class MyFirebaseService {
         fileName: String,
         filePath: String,
         uploader: String,
-        onUploadSuccess: (mediaUrl: String) -> Unit,
-        onUploadFailure: (message: String) -> Unit,
+        onUploadSuccess: () -> Unit,
+        onUploadFailure: () -> Unit,
         uploadProgress: (progress: String) -> Unit,
         getDownloadUrl: (uri: String) -> Unit
     ) {
@@ -43,13 +43,13 @@ class MyFirebaseService {
         // Register observers to listen for when the download is done or if it fails
         uploadTask.addOnFailureListener {
             Log.i(LOG_RECORD_AUDIO, "Upload failed " + it.message)
-            onUploadFailure(it.message!!)
+            onUploadFailure()
         }
             .addOnSuccessListener { taskSnapshot ->
                 if (taskSnapshot.task.isSuccessful) {
                     val downloadUri =
                         taskSnapshot.metadata?.bucket + "/" + taskSnapshot.metadata?.path
-                    onUploadSuccess(downloadUri)
+                    onUploadSuccess()
                 } else {
                     println("Task failed  ${taskSnapshot.task.exception.toString()}")
                 }
