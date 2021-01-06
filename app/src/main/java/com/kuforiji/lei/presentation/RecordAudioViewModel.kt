@@ -16,12 +16,11 @@ import kotlinx.coroutines.withContext
 const val LOG = "AudioRecordLog"
 
 class DavidRecordsViewModel @ViewModelInject constructor(
-    private val uploadUrlsUseCase: BaseUseCase.PostUseCase<UploadUrlRequest, UploadUrlResponse>
+    private val uploadUrlsUseCase: BaseUseCase.PostUseCase<UploadUrlRequest, UploadUrlResponse>,
 ) : ViewModel() {
 
     private var _uploadAudioLiveData = MutableLiveData<UploadUrlResponse>()
     val uploadAudioLiveData: LiveData<UploadUrlResponse> = _uploadAudioLiveData
-
 
     fun uploadUrl(fileName: String, url: String) {
         val uploadUrlRequest = UploadUrlRequest(fileName, url)
@@ -39,5 +38,4 @@ class DavidRecordsViewModel @ViewModelInject constructor(
             }
         }
     }
-
 }

@@ -1,13 +1,14 @@
 package com.kuforiji.lei.di
 
 import com.kuforiji.lei.core.BaseUseCase
+import com.kuforiji.lei.datasource.model.FetchUrlRequest
+import com.kuforiji.lei.datasource.model.FetchUrlResponse
 import com.kuforiji.lei.datasource.model.UploadUrlRequest
 import com.kuforiji.lei.datasource.model.UploadUrlResponse
-import com.kuforiji.lei.datasource.remote.RemoteUploadUrlsRequest
-import com.kuforiji.lei.datasource.remote.RemoteUploadUrlsRequestImpl
-import com.kuforiji.lei.datasource.remote.UploadUrlApi
+import com.kuforiji.lei.datasource.remote.*
 import com.kuforiji.lei.datasource.repository.AppRepository
 import com.kuforiji.lei.datasource.repository.AppRepositoryImpl
+import com.kuforiji.lei.domain.FetchAudioUrlUseCase
 import com.kuforiji.lei.domain.UploadAudioUrlUseCase
 import com.kuforiji.lei.utils.BASE_URL
 import com.squareup.moshi.Moshi
@@ -38,8 +39,18 @@ interface AppModule {
     ): RemoteUploadUrlsRequest
 
     @Binds
-    fun provideUploadAudioUrlUseCase(uploadAudioUrlUseCase: UploadAudioUrlUseCase):
+    fun bindUploadAudioUrlUseCase(uploadAudioUrlUseCase: UploadAudioUrlUseCase):
             BaseUseCase.PostUseCase<UploadUrlRequest, UploadUrlResponse>
+
+    @Binds
+    fun bindRemoteFetchUrlRequest(
+        remoteFetchUrlsRequestImpl: RemoteFetchUrlsRequestImpl
+    ): RemoteFetchUrlsRequest
+
+    @Binds
+    fun bindFetchUrlsUseCase(
+        fetchAudioUrlUseCase: FetchAudioUrlUseCase
+    ): BaseUseCase.PostUseCase<FetchUrlRequest, FetchUrlResponse>
 
     companion object {
 
@@ -47,6 +58,11 @@ interface AppModule {
         @Provides
         fun provideUploadUrlApi(retrofit: Retrofit): UploadUrlApi = retrofit.create(
             UploadUrlApi::class.java
+        )
+
+        @Provides
+        fun provideFetchUrlApi(retrofit: Retrofit): FetchUrlApi = retrofit.create(
+            FetchUrlApi::class.java
         )
 
         @Provides
