@@ -6,6 +6,6 @@ import javax.inject.Inject
 
 class RemoteFetchUrlsRequestImpl @Inject constructor(private val fetchUrlApi: FetchUrlApi) :
     RemoteFetchUrlsRequest {
-    override suspend fun fetchUrl(fetchUrlsRequest: FetchUrlRequest): FetchUrlResponse =
+    override suspend fun fetchUrl(fetchUrlsRequest: FetchUrlRequest): List<FetchUrlResponse> =
         fetchUrlApi.fetchAudioUrl(fetchUrlsRequest = fetchUrlsRequest)
 }

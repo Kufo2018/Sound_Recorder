@@ -7,9 +7,9 @@ import com.kuforiji.lei.datasource.repository.AppRepository
 import javax.inject.Inject
 
 class FetchAudioUrlUseCase @Inject constructor(private val appRepository: AppRepository) :
-    BaseUseCase.PostUseCase<FetchUrlRequest, FetchUrlResponse> {
+    BaseUseCase.GetUseCase<FetchUrlRequest, FetchUrlResponse> {
 
 
-    override suspend fun postData(param: FetchUrlRequest): FetchUrlResponse =
+    override suspend fun getData(param: FetchUrlRequest): List<FetchUrlResponse> =
         appRepository.fetchAudioUrl(param)
 }

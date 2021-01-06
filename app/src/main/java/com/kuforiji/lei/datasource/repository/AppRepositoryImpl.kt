@@ -16,6 +16,6 @@ class AppRepositoryImpl @Inject constructor(
     override suspend fun uploadAudioUrl(uploadUrlRequest: UploadUrlRequest): UploadUrlResponse =
         remoteUploadUrlsRequest.uploadAudioUrl(uploadUrlRequest)
 
-    override suspend fun fetchAudioUrl(fetchUrlRequest: FetchUrlRequest): FetchUrlResponse =
+    override suspend fun fetchAudioUrl(fetchUrlRequest: FetchUrlRequest): List<FetchUrlResponse> =
         remoteFetchUrlsRequest.fetchUrl(fetchUrlRequest)
 }

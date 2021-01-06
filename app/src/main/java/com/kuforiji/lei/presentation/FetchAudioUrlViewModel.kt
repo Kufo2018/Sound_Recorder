@@ -14,21 +14,23 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class FetchAudioUrlViewModel @ViewModelInject constructor(
-    private val fetchAudioUrlUseCase: BaseUseCase.PostUseCase<FetchUrlRequest, FetchUrlResponse>
+    private val fetchAudioUrlUseCase:
+    BaseUseCase.GetUseCase<FetchUrlRequest, FetchUrlResponse>
 ) : ViewModel() {
 
-    private var _fetchAudioLiveData = MutableLiveData<FetchUrlResponse>()
-    val fetchAudioLiveData: LiveData<FetchUrlResponse> = _fetchAudioLiveData
+    private var _fetchAudioLiveData = MutableLiveData<List<FetchUrlResponse>>()
+    val fetchAudioLiveData: LiveData<List<FetchUrlResponse>> = _fetchAudioLiveData
 
     fun fetchAudioUrls(name: String) {
         val fetchUrlRequest = FetchUrlRequest(name)
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 runCatching {
-                    fetchAudioUrlUseCase.postData(fetchUrlRequest)
+                    fetchAudioUrlUseCase.getData(fetchUrlRequest)
                 }
                     .onSuccess {
-                        Log.i(LOG, "fetched urls successfully $it")
+                        Log.i(LOG, "fetched urls successfully")
+                        _fetchAudioLiveData.postValue(it)
                     }
                     .onFailure {
                         Log.i(LOG, "failed to fetch URL ${it.message}")

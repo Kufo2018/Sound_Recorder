@@ -9,5 +9,5 @@ interface AppRepository {
 
     suspend fun uploadAudioUrl(uploadUrlRequest: UploadUrlRequest): UploadUrlResponse
 
-    suspend fun fetchAudioUrl(fetchUrlRequest: FetchUrlRequest): FetchUrlResponse
+    suspend fun fetchAudioUrl(fetchUrlRequest: FetchUrlRequest): List<FetchUrlResponse>
 }

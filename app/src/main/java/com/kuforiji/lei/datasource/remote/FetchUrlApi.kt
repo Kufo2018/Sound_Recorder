@@ -9,5 +9,5 @@ interface FetchUrlApi {
     @POST("fetch_audio_urls")
     suspend fun fetchAudioUrl(
         @Body fetchUrlsRequest: FetchUrlRequest
-    ): FetchUrlResponse
+    ): List<FetchUrlResponse>
 }

@@ -50,7 +50,7 @@ interface AppModule {
     @Binds
     fun bindFetchUrlsUseCase(
         fetchAudioUrlUseCase: FetchAudioUrlUseCase
-    ): BaseUseCase.PostUseCase<FetchUrlRequest, FetchUrlResponse>
+    ): BaseUseCase.GetUseCase<FetchUrlRequest, FetchUrlResponse>
 
     companion object {
 

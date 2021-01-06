@@ -5,5 +5,5 @@ import com.kuforiji.lei.datasource.model.FetchUrlResponse
 
 interface RemoteFetchUrlsRequest {
 
-    suspend fun fetchUrl(fetchUrlsRequest: FetchUrlRequest): FetchUrlResponse
+    suspend fun fetchUrl(fetchUrlsRequest: FetchUrlRequest): List<FetchUrlResponse>
 }
