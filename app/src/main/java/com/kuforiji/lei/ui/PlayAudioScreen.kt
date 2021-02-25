@@ -18,7 +18,7 @@ import com.kuforiji.lei.presentation.FetchAudioUrlViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class DavidRecords : Fragment() {
+class PlayAudioScreen : Fragment() {
 
 
     private lateinit var recyclerView: RecyclerView
@@ -35,7 +35,7 @@ class DavidRecords : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        layout = inflater.inflate(R.layout.fragment_david_records, container, false)
+        layout = inflater.inflate(R.layout.fragment_play_audio_screen, container, false)
         return layout
     }
 
