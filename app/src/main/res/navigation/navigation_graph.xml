@@ -12,10 +12,10 @@
         tools:layout="@layout/fragment_record_audio">
         <action
             android:id="@+id/action_recordAudio_to_leiRecords"
-            app:destination="@id/leiRecords" />
+            app:destination="@id/playAudioScreen2" />
         <action
             android:id="@+id/action_recordAudio_to_davidRecords"
-            app:destination="@id/davidRecords">
+            app:destination="@id/playAudioScreen">
             <argument
                 android:name="downloadUri"
                 android:defaultValue=""
@@ -23,24 +23,24 @@
         </action>
     </fragment>
     <fragment
-        android:id="@+id/davidRecords"
-        android:name="com.kuforiji.lei.ui.DavidRecords"
+        android:id="@+id/playAudioScreen"
+        android:name="com.kuforiji.lei.ui.PlayAudioScreen"
         android:label="fragment_david_records"
-        tools:layout="@layout/fragment_david_records">
+        tools:layout="@layout/fragment_play_audio_screen">
         <argument
             android:name="downloadUri"
             android:defaultValue=""
             app:argType="string" />
         <action
             android:id="@+id/action_davidRecords_to_leiRecords"
-            app:destination="@id/leiRecords" />
+            app:destination="@id/playAudioScreen2" />
     </fragment>
     <fragment
-        android:id="@+id/leiRecords"
-        android:name="com.kuforiji.lei.ui.LeiRecords"
+        android:id="@+id/playAudioScreen2"
+        android:name="com.kuforiji.lei.ui.PlayAudioScreen2"
         android:label="LeiRecords">
         <action
             android:id="@+id/action_leiRecords_to_davidRecords"
-            app:destination="@id/davidRecords" />
+            app:destination="@id/playAudioScreen" />
     </fragment>
 </navigation>

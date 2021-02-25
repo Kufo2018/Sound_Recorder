@@ -108,10 +108,11 @@ class RecordAudio : Fragment() {
                     return@setOnClickListener
                 }
             }
+            Log.i(LOG_RECORD_AUDIO, "upload button clicked")
             uploadAudio()
         }
         editText.afterTextChanged {
-            fileName = it
+            if (it.isNotEmpty()) fileName = it
             Log.i(LOG_RECORD_AUDIO, "text is $it")
         }
     }

@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.kuforiji.lei.R
 
-class LeiRecords : Fragment() {
+class PlayAudioScreen2 : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
@@ -17,7 +17,7 @@ class LeiRecords : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_lei_records, container, false)
+        return inflater.inflate(R.layout.fragment_play_audio_screen_2, container, false)
     }
 
 }
