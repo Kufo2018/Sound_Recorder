@@ -79,8 +79,8 @@ class RecordAudio : Fragment() {
     }
 
     private fun clickListeners(view: View) {
-        val leiRecords = view.findViewById<Button>(R.id.lei_records)
-        val davidRecords = view.findViewById<Button>(R.id.david_records)
+        val leiRecords = view.findViewById<Button>(R.id.go_to_playback_screen2)
+        val davidRecords = view.findViewById<Button>(R.id.go_to_playback_screen1)
         val recordAudio = view.findViewById<ImageView>(R.id.record_audio_image)
         leiRecords.setOnClickListener {
             view.findNavController().navigate(

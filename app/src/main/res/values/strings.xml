@@ -3,8 +3,8 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="record_audio">Record</string>
-    <string name="go_to_lei_s_recordings">Lei\'s Recordings</string>
-    <string name="go_to_david_s_recordings">David\'s Recordings</string>
+    <string name="playback_screen_2">Playback Screen2</string>
+    <string name="playback_screen_1">Playback Screen1</string>
     <string name="start_recording">Record</string>
     <string name="stop_recording">Stop</string>
     <string name="playback_audio">Play</string>
